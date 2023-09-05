@@ -40,7 +40,7 @@ public class NetworkingDefault: NetworkConformable {
     }
     
     private func createAndPerformRequest<O>(_ router: NetworkingRouter, multipart: [File]) async throws ->  Response<O> {
-        guard let config = Networking.default.config else {
+        guard let config = NetworkingDefault.default.config else {
             throw NetworkingError(.networkingNotInitialized)
         }
         
