@@ -9,15 +9,14 @@ import Foundation
 
 @available(macOS 10.15.0, *)
 @available(iOS 13.0.0, *)
-public class Networking: NetworkConformable {
-    
+public class NetworkingDefault: NetworkConformable {
     public func dataRequest<T>(router: NetworkingRouter, type: T.Type) async throws -> T? {
         nil
     }
     
     
     /// make the instance shared
-    public static let `default` = Networking()
+    public static let `default` = NetworkingDefault()
     private init() {}
     
     /// The networking configuration
@@ -26,7 +25,7 @@ public class Networking: NetworkConformable {
     /// Method to set the configuration from client side
     /// - Parameter config: The networking configuration
     public static func initialize(with config: NetworkingConfiguration) {
-        Networking.default.config = config
+        NetworkingDefault.default.config = config
         _ = Connectivity.default
     }
     
