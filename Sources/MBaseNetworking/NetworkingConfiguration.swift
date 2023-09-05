@@ -7,6 +7,7 @@
 
 import Foundation
 
+@available(iOS 13.0.0, *)
 @available(macOS 10.15.0, *)
 public struct NetworkingConfiguration {
     
