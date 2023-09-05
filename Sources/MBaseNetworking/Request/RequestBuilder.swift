@@ -8,6 +8,7 @@
 import Foundation
 
 /// The struct for building the request with information from router
+@available(iOS 13.0.0, *)
 @available(macOS 10.15.0, *)
 struct RequestBuilder {
     /// The router of the request
