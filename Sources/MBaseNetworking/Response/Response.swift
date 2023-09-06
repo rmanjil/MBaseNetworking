@@ -8,6 +8,6 @@
 import Foundation
 
 public struct Response<T: Decodable> {
-    var data: T
-    var statusCode: Int
+    public var data: T
+    public var statusCode: Int
 }
