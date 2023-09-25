@@ -76,13 +76,13 @@ public struct RequestMaker {
             if config.printLogger {
                 Logger.log(response, request: request, data: data)
             }
+            if  O.self is String.Type, let string = String(data: data, encoding: .utf8), let value = string as? O {
+                let   networkResponse = NetworkingResponse<O>(router: router, data: data, request: request, response: response, object: value)
+                return  await handleResponse(networkResponse: networkResponse, session: session, request: request)
+            }
             if let decodableType = O.self as? Decodable.Type {
                 let object =  try JSONDecoder().decode(decodableType, from: data)
                 let  networkResponse = NetworkingResponse<O>(router: router, data: data, request: request, response: response, object: object as? O)
-                return  await handleResponse(networkResponse: networkResponse, session: session, request: request)
-            }
-            if let string = String(data: data, encoding: .utf8), let value = string as? O {
-                let   networkResponse = NetworkingResponse<O>(router: router, data: data, request: request, response: response, object: value)
                 return  await handleResponse(networkResponse: networkResponse, session: session, request: request)
             }
             return .failure(NetworkingError("Response is not in correct format."))
