@@ -71,8 +71,13 @@ public struct RequestMaker {
     }
     
     private func normalRequest<O>(_ session: URLSession, request: URLRequest) async -> RequestMaker.NetworkResult<O> {
+        var statusCode: Int?
         do {
+            
             let (data, response)  = try await session.data(for: request)
+            if let httpURLResponse = response as? HTTPURLResponse {
+                statusCode = httpURLResponse.statusCode
+            }
             if config.printLogger {
                 Logger.log(response, request: request, data: data)
             }
@@ -87,17 +92,36 @@ public struct RequestMaker {
             }
             return .failure(NetworkingError("Response is not in correct format."))
             
-        } catch let DecodingError.typeMismatch(type, context) {
+        } catch let error as DecodingError {
+            switch error {
+                
+            case .typeMismatch(let type, let context) :
+                let message = "Type '\(type)' mismatch: \(context.debugDescription)"
+                return .failure(NetworkingError(message, code: statusCode ?? error.errorCode))
+            case .valueNotFound(let value,let context):
+                let message = "value '\(value)' mismatch: \(context.debugDescription)"
+                return .failure(NetworkingError(message))
+            case .keyNotFound(let key, let context):
+                let message = "Key '\(key)' mismatch: \(context.debugDescription)"
+                return .failure(NetworkingError(message))
+            case .dataCorrupted(let context):
+                let message = "Data  corrupted: \(context.debugDescription)"
+                return .failure(NetworkingError(message, code: statusCode ?? error.errorCode))
+            @unknown default:
+                return .failure(NetworkingError(error.localizedDescription, code: statusCode ?? error.errorCode))
+            }
+        }
+       /* catch let DecodingError.typeMismatch(type, context) {
             let message = "Type '\(type)' mismatch: \(context.debugDescription)"
-            return .failure(NetworkingError(message))
+            return .failure(NetworkingError(message, code: statusCode))
         } catch  let DecodingError.keyNotFound(key, context) {
             let message = "Key '\(key)' mismatch: \(context.debugDescription)"
             return .failure(NetworkingError(message))
         } catch let DecodingError.valueNotFound(value, context) {
             let message = "value '\(value)' mismatch: \(context.debugDescription)"
             return .failure(NetworkingError(message))
-        } catch {
-            return .failure(NetworkingError(error))
+        }*/ catch {
+            return .failure(NetworkingError(error.localizedDescription, code: statusCode ?? error.errorCode))
         }
     }
     
