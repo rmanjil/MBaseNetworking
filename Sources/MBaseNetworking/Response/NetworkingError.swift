@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension Error {
-    public var errorCode: Int {
+public extension Error {
+     var errorCode: Int {
         return (self as NSError).code
     }
 }
