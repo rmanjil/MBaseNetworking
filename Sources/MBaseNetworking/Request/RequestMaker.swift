@@ -96,16 +96,20 @@ public struct RequestMaker {
             switch error {
                 
             case .typeMismatch(let type, let context) :
-                let message = "Type '\(type)' mismatch: \(context.debugDescription)"
+                let keyPath = context.codingPath.map { $0.stringValue }.joined(separator: " -> ")
+                let message = "Type '\(type)' '{{\(keyPath)}}' mismatch: \(context.debugDescription)"
                 return .failure(NetworkingError(message, code: statusCode ?? error.errorCode))
             case .valueNotFound(let value,let context):
-                let message = "value '\(value)' mismatch: \(context.debugDescription)"
+                    let keyPath = context.codingPath.map { $0.stringValue }.joined(separator: " -> ")
+                let message = "value '\(value)'  '{{\(keyPath)}}' mismatch: \(context.debugDescription)"
                 return .failure(NetworkingError(message))
             case .keyNotFound(let key, let context):
-                let message = "Key '\(key)' mismatch: \(context.debugDescription)"
+                    let keyPath = context.codingPath.map { $0.stringValue }.joined(separator: " -> ")
+                let message = "Key '\(key)'  '{{\(keyPath)}}' mismatch: \(context.debugDescription)"
                 return .failure(NetworkingError(message))
             case .dataCorrupted(let context):
-                let message = "Data  corrupted: \(context.debugDescription)"
+                    let keyPath = context.codingPath.map { $0.stringValue }.joined(separator: " -> ")
+                let message = "Data  corrupted  '{{\(keyPath)}}' : \(context.debugDescription)"
                 return .failure(NetworkingError(message, code: statusCode ?? error.errorCode))
             @unknown default:
                 return .failure(NetworkingError(error.localizedDescription, code: statusCode ?? error.errorCode))
