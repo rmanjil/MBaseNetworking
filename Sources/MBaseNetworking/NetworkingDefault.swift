@@ -10,6 +10,8 @@ import Foundation
 @available(macOS 10.15.0, *)
 @available(iOS 13.0.0, *)
 public class NetworkingDefault: NetworkConformable {
+   
+    
     public func dataRequest<T>(router: NetworkingRouter, type: T.Type) async throws -> T? {
         nil
     }
@@ -62,5 +64,18 @@ public class NetworkingDefault: NetworkConformable {
         }
         
         throw NetworkingError("SOMETHING_WENT_WRONG")
+    }
+    
+    
+    public func dataRequest<T>(router: any NetworkingRouter, type: T.Type) async -> Result<T, NetworkingError> {
+        .failure(.init("No DATA", code: 0))
+    }
+    
+    public func dataRequest<O>(router: any NetworkingRouter, type: O.Type) async throws -> NetworkResult<O> where O : Decodable {
+        <#code#>
+    }
+    
+    public func multipartRequest<O>(router: any NetworkingRouter, multipart: [File], type: O.Type) async throws -> NetworkResult<O> where O : Decodable {
+        <#code#>
     }
 }
