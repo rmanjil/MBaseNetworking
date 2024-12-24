@@ -18,14 +18,16 @@ public struct NetworkingConfiguration {
     /// The url session connfiguration
     let sessionConfiguration: URLSessionConfiguration
     let tokenManageable: TokenManageable
+    let headerHandler: HeaderHandler
     let printLogger: Bool
     
     
-    public init(baseURL: String, parameter: [String: String] = [:], tokenManageable: TokenManageable, sessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default, printLogger: Bool = false) {
+    public init(baseURL: String, parameter: [String: String] = [:], tokenManageable: TokenManageable, headerHandler: HeaderHandler, sessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default, printLogger: Bool = false) {
         self.baseURL = baseURL
         self.parameter = parameter
         self.sessionConfiguration = sessionConfiguration
         self.tokenManageable = tokenManageable
+        self.headerHandler = headerHandler
         self.printLogger = printLogger
     }
     

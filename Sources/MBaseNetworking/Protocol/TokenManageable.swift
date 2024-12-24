@@ -16,3 +16,8 @@ public protocol TokenManageable {
     var tokenParam: [String: String] {get }
     
 }
+
+public protocol HeaderHandler {
+    
+    func extract(header: [AnyHashable: Any])
+}

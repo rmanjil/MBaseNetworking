@@ -77,6 +77,7 @@ public struct RequestMaker {
             let (data, response)  = try await session.data(for: request)
             if let httpURLResponse = response as? HTTPURLResponse {
                 statusCode = httpURLResponse.statusCode
+                config.headerHandler.extract(header: httpURLResponse.allHeaderFields)
             }
             if config.printLogger {
                 Logger.log(response, request: request, data: data)
