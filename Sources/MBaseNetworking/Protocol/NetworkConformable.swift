@@ -21,5 +21,5 @@ public protocol NetworkConformable {
     
     func dataRequest<T>(router: NetworkingRouter ,type: T.Type) async -> Result<T, NetworkingError>
     func dataRequest<O>(router: NetworkingRouter ,type: O.Type) async  -> NetworkResult<O>
-    func multipartRequest<O>(router: NetworkingRouter, multipart: [File], type: O.Type) async  -> NetworkResult<O>
+    func multipartRequest<O>(router: NetworkingRouter, multipart: [File], type: O.Type, isForceMultiPart: Bool) async  -> NetworkResult<O>
 }

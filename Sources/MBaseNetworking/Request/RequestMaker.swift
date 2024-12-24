@@ -13,10 +13,12 @@ public struct RequestMaker {
     typealias NetworkResult<O> = (Result<NetworkingResponse<O>, NetworkingError>)
     private let router: NetworkingRouter
     private let config: NetworkingConfiguration
+    private let isForceMultiPart: Bool
     
-    init(router: NetworkingRouter, config: NetworkingConfiguration) {
+    init(router: NetworkingRouter, config: NetworkingConfiguration, isForceMultiPart: Bool) {
         self.router = router
         self.config = config
+        self.isForceMultiPart = isForceMultiPart
     }
     
    
@@ -33,7 +35,7 @@ public struct RequestMaker {
             let requestBuilder = RequestBuilder(router: router, config: config)
             let request: URLRequest
             var parameter: Parameters = [:]
-            if  multipart.isEmpty { request = try requestBuilder.getRequest() } else {
+            if  multipart.isEmpty && !isForceMultiPart { request = try requestBuilder.getRequest() } else {
                 let multi =  try requestBuilder.getMultipartRequest()
                 request = multi.request
                 parameter = multi.parameters
@@ -64,7 +66,7 @@ public struct RequestMaker {
     }
     
     private func checkMultipartThenRequest<O>(_ session: URLSession, request: URLRequest, parameters: Parameters, multipart: [File]) async -> NetworkResult<O> {
-        if multipart.isEmpty {
+        if multipart.isEmpty && !isForceMultiPart {
             return  await normalRequest(session, request: request)
         }
         return await multipartRequest(session, request: request, parameters: parameters, multipart: multipart)

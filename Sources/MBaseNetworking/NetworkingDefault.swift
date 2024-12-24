@@ -25,7 +25,7 @@ public class NetworkingDefault: NetworkConformable {
         _ = Connectivity.default
     }
     
-    private func createAndPerformRequest<O>(_ router: NetworkingRouter, multipart: [File]) async  -> NetworkResult<O> {
+    private func createAndPerformRequest<O>(_ router: NetworkingRouter, multipart: [File], isForceMultiPart: Bool) async  -> NetworkResult<O> {
         guard let config = NetworkingDefault.default.config else {
             return .failure(NetworkingError(.networkingNotInitialized))
         }
@@ -33,7 +33,7 @@ public class NetworkingDefault: NetworkConformable {
         guard Connectivity.default.status == .connected else {
             return .failure( NetworkingError(.noConnectivity))
         }
-        let requestMaker = RequestMaker(router: router, config: config)
+        let requestMaker = RequestMaker(router: router, config: config, isForceMultiPart: isForceMultiPart)
         
         let result: RequestMaker.NetworkResult<O> = await (multipart.isEmpty ?   requestMaker.makeDataRequest() :  requestMaker.makeMultiRequest(multipart: multipart))
         
@@ -56,10 +56,10 @@ public class NetworkingDefault: NetworkConformable {
     }
     
     public func dataRequest<O>(router: any NetworkingRouter, type: O.Type) async  -> NetworkResult<O> where O : Decodable {
-        await createAndPerformRequest(router, multipart: [])
+        await createAndPerformRequest(router, multipart: [], isForceMultiPart: false)
     }
     
-    public func multipartRequest<O>(router: any NetworkingRouter, multipart: [File], type: O.Type) async  -> NetworkResult<O> where O : Decodable {
-        await createAndPerformRequest(router, multipart: multipart)
+    public func multipartRequest<O>(router: any NetworkingRouter, multipart: [File], type: O.Type, isForceMultiPart: Bool = false) async  -> NetworkResult<O> where O : Decodable {
+        await createAndPerformRequest(router, multipart: multipart, isForceMultiPart: isForceMultiPart)
     }
 }
