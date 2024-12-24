@@ -10,13 +10,7 @@ import Foundation
 @available(macOS 10.15.0, *)
 @available(iOS 13.0.0, *)
 public class NetworkingDefault: NetworkConformable {
-   
-    
-    public func dataRequest<T>(router: NetworkingRouter, type: T.Type) async throws -> T? {
-        nil
-    }
-    
-    
+       
     /// make the instance shared
     public static let `default` = NetworkingDefault()
     private init() {}
@@ -31,23 +25,13 @@ public class NetworkingDefault: NetworkConformable {
         _ = Connectivity.default
     }
     
-    /// Method to create a response publisher for data
-    public func dataRequest<O>(router: NetworkingRouter, type: O.Type)  async throws ->  Response<O> {
-        try  await createAndPerformRequest(router, multipart: [])
-    }
-    
-    /// Method to create a response publisher for data
-    public func multipartRequest<O>(router: NetworkingRouter, multipart: [File], type: O.Type) async throws -> Response<O> {
-        try await createAndPerformRequest(router, multipart: multipart)
-    }
-    
-    private func createAndPerformRequest<O>(_ router: NetworkingRouter, multipart: [File]) async throws ->  Response<O> {
+    private func createAndPerformRequest<O>(_ router: NetworkingRouter, multipart: [File]) async  -> NetworkResult<O> {
         guard let config = NetworkingDefault.default.config else {
-            throw NetworkingError(.networkingNotInitialized)
+            return .failure(NetworkingError(.networkingNotInitialized))
         }
         
         guard Connectivity.default.status == .connected else {
-            throw NetworkingError(.noConnectivity)
+            return .failure( NetworkingError(.noConnectivity))
         }
         let requestMaker = RequestMaker(router: router, config: config)
         
@@ -57,13 +41,13 @@ public class NetworkingDefault: NetworkConformable {
             case .success(let data):
                 if let model = data.object {
                     let response = Response(data: model, statusCode: data.statusCode)
-                    return response
+                    return .success(response)
                 }
             case .failure(let error):
-                throw error
+                return  .failure(error)
         }
         
-        throw NetworkingError("SOMETHING_WENT_WRONG")
+        return  .failure(NetworkingError("SOMETHING_WENT_WRONG"))
     }
     
     
@@ -71,11 +55,11 @@ public class NetworkingDefault: NetworkConformable {
         .failure(.init("No DATA", code: 0))
     }
     
-    public func dataRequest<O>(router: any NetworkingRouter, type: O.Type) async throws -> NetworkResult<O> where O : Decodable {
-        <#code#>
+    public func dataRequest<O>(router: any NetworkingRouter, type: O.Type) async  -> NetworkResult<O> where O : Decodable {
+        await createAndPerformRequest(router, multipart: [])
     }
     
-    public func multipartRequest<O>(router: any NetworkingRouter, multipart: [File], type: O.Type) async throws -> NetworkResult<O> where O : Decodable {
-        <#code#>
+    public func multipartRequest<O>(router: any NetworkingRouter, multipart: [File], type: O.Type) async  -> NetworkResult<O> where O : Decodable {
+        await createAndPerformRequest(router, multipart: multipart)
     }
 }
